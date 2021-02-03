@@ -1,22 +1,50 @@
 import { GraphQLServer } from "graphql-yoga";
 
+//Scaler types -> String, Boolean, Int, Float, ID
+
 // Type defination (schema)
 const typeDefs = `
   type Query {
-    hello(name: String): String!
-    name(name: String): String!
-    location(name: String): String!
-    bio(name: String): String!
+    greeting(name: String,position: String): String!
+    add(x: Float!, y: Float!): Float!
+    me: User!
+    posts: Post!
+  }
+  type User{
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
+  }
+  type Post{
+    id: ID!
+    title: String!
+    body: String!
+    published: Boolean!
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    hello: () => "Hello World",
-    name: () => "Rabin Phaiju",
-    location: () => "Bhaktapur",
-    bio: () => "Software Engineer",
+    greeting: (parent, args, ctx, info) => `hello ${args.name || "world"} ${args.position}`,
+    add: (parent, args, ctx, info) => args.x + args.y,
+    me() {
+      return {
+        id: "12323",
+        name: "Rabin",
+        email: "rabin@gmial.com",
+        age: null,
+      };
+    },
+    posts() {
+      return {
+        id: "123",
+        title: "new phone",
+        body: "smartphone",
+        published: false,
+      };
+    },
   },
 };
 
