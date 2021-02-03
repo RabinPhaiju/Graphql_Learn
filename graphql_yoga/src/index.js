@@ -1,6 +1,7 @@
 import { GraphQLServer } from "graphql-yoga";
 import { users } from "./data/users";
 import { posts } from "./data/posts";
+import { comments } from "./data/comments";
 
 //Scaler types -> String, Boolean, Int, Float, ID
 
@@ -12,6 +13,7 @@ const typeDefs = `
     grades: [Int!]!
     users(query: String): [User!]!
     posts(query: String): [Post!]!
+    comments(query: String): [Comment!]!
     me: User!
   }
   type User{
@@ -20,6 +22,7 @@ const typeDefs = `
     email: String!
     age: Int
     posts: [Post!]!
+    comments: [Comment!]!
   }
   type Post{
     id: ID!
@@ -27,6 +30,13 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment!]!
+  }
+  type Comment{
+    id: ID!
+    text: String!
+    author: User!
+    post: Post!
   }
 `;
 
@@ -66,6 +76,16 @@ const resolvers = {
         });
       }
     },
+    comments(parent, args, ctx, info) {
+      if (!args.query) {
+        return comments;
+      } else {
+        return comments.filter((comment) => {
+          const isTextMatch = comment.text.toLowerCase().includes(args.query.toLowerCase());
+          return isTextMatch;
+        });
+      }
+    },
     me() {
       return {
         id: "12323",
@@ -81,11 +101,33 @@ const resolvers = {
         return user.id === parent.author;
       });
     },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.post === parent.id;
+      });
+    },
+  },
+  Comment: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      });
+    },
+    post(parent, args, ctx, info) {
+      return posts.find((post) => {
+        return post.id === parent.post;
+      });
+    },
   },
   User: {
     posts(parent, args, ctx, info) {
       return posts.filter((post) => {
         return post.author === parent.id;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.author === parent.id;
       });
     },
   },
