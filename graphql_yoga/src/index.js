@@ -19,12 +19,14 @@ const typeDefs = `
     name: String!
     email: String!
     age: Int
+    posts: [Post!]!
   }
   type Post{
     id: ID!
     title: String!
     body: String!
     published: Boolean!
+    author: User!
   }
 `;
 
@@ -73,7 +75,24 @@ const resolvers = {
       };
     },
   },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      });
+    },
+  },
+  User: {
+    posts(parent, args, ctx, info) {
+      return posts.filter((post) => {
+        return post.author === parent.id;
+      });
+    },
+  },
 };
 
-const server = new GraphQLServer({ typeDefs, resolvers });
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers,
+});
 server.start(() => console.log("Server is running on localhost : 4000"));
