@@ -7,3 +7,7 @@
 # What is a Graph?
 
 - It is a model/table/collection.
+
+# Mutation
+
+- create, update, delete operation
