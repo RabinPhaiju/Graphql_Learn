@@ -1,4 +1,6 @@
 import { GraphQLServer } from "graphql-yoga";
+import { users } from "./data/users";
+import { posts } from "./data/posts";
 
 //Scaler types -> String, Boolean, Int, Float, ID
 
@@ -6,9 +8,11 @@ import { GraphQLServer } from "graphql-yoga";
 const typeDefs = `
   type Query {
     greeting(name: String,position: String): String!
-    add(x: Float!, y: Float!): Float!
+    add(numbers: [Float!]!): Float!
+    grades: [Int!]!
+    users(query: String): [User!]!
+    posts(query: String): [Post!]!
     me: User!
-    posts: Post!
   }
   type User{
     id: ID!
@@ -28,21 +32,44 @@ const typeDefs = `
 const resolvers = {
   Query: {
     greeting: (parent, args, ctx, info) => `hello ${args.name || "world"} ${args.position}`,
-    add: (parent, args, ctx, info) => args.x + args.y,
+    add(parent, args, ctx, info) {
+      if (args.numbers.length === 0) {
+        return 0;
+      } else {
+        return args.numbers.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue;
+        });
+      }
+    },
+    grades: (parent, args, ctx, info) => [33, 44, 55],
+    users(parent, args, ctx, info) {
+      if (!args.query) {
+        return users;
+      } else {
+        return users.filter((user) => {
+          return user.name.toLowerCase().includes(args.query.toLowerCase());
+        });
+      }
+    },
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts.filter((post) => {
+          return post.published;
+        });
+      } else {
+        return posts.filter((post) => {
+          const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
+          const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
+          return (isTitleMatch || isBodyMatch) && post.published;
+        });
+      }
+    },
     me() {
       return {
         id: "12323",
         name: "Rabin",
         email: "rabin@gmial.com",
         age: null,
-      };
-    },
-    posts() {
-      return {
-        id: "123",
-        title: "new phone",
-        body: "smartphone",
-        published: false,
       };
     },
   },
