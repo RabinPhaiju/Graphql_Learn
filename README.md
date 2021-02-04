@@ -25,3 +25,7 @@
   - Prisma Client: Auto-generated and type-safe query builder for Node.js & TypeScript
   - Prisma Migrate (Preview): Migration system
   - Prisma Studio: GUI to view and edit data in your database
+
+# Migrate
+
+- npx prisma migrate dev --name init --preview-feature

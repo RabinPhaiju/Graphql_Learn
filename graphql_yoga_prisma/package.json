@@ -1,0 +1,19 @@
+{
+  "name": "graphql_yoga",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js --ext js,graphql,prisma",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^2.16.0",
+    "graphql-yoga": "^1.18.3",
+    "uuid": "^3.3.2"
+  }
+}
