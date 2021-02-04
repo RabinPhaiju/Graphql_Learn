@@ -1,5 +1,5 @@
-import location, { message, name, getGreeting } from "./Module/myModule";
-import add, { substract } from "./Module/math";
+import location, { message, name, getGreeting } from "./Module/myModule.js";
+import add, { substract } from "./Module/math.js";
 
 console.log(message);
 console.log(name + " from ", location);
