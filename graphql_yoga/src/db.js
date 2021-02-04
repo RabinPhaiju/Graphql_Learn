@@ -25,7 +25,7 @@ const posts = [
     id: "2",
     title: "post 2",
     body: "This is a new post",
-    published: true,
+    published: false,
     author: "2",
   },
   {
