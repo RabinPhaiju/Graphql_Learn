@@ -11,3 +11,10 @@
 # Mutation
 
 - create, update, delete operation
+
+# Enum
+
+- A special type taht defines a set of constants.
+- The type can be used as the type fro a field (Similar to scalar and custom object type)
+- Values for the field must be one of the constants for the type
+- eg:- UserRole - standard, editor, admin
