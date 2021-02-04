@@ -1,12 +1,12 @@
 import { GraphQLServer, PubSub } from "graphql-yoga";
 
-import db from "./db";
-import Query from "./resolvers/Query";
-import Mutation from "./resolvers/Mutation";
-import Subscription from "./resolvers/Subscription";
-import User from "./resolvers/User";
-import Post from "./resolvers/Post";
-import Comment from "./resolvers/Comment";
+import db from "./db.js";
+import Query from "./resolvers/Query.js";
+import Mutation from "./resolvers/Mutation.js";
+import Subscription from "./resolvers/Subscription.js";
+import User from "./resolvers/User.js";
+import Post from "./resolvers/Post.js";
+import Comment from "./resolvers/Comment.js";
 
 const pubsub = new PubSub();
 

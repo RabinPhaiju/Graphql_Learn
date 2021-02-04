@@ -18,3 +18,10 @@
 - The type can be used as the type fro a field (Similar to scalar and custom object type)
 - Values for the field must be one of the constants for the type
 - eg:- UserRole - standard, editor, admin
+
+# Prisma
+
+- Prisma is an open source next-generation ORM.
+  - Prisma Client: Auto-generated and type-safe query builder for Node.js & TypeScript
+  - Prisma Migrate (Preview): Migration system
+  - Prisma Studio: GUI to view and edit data in your database

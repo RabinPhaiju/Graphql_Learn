@@ -1,4 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
+import pkg from "uuid";
+const { v4: uuidv4 } = pkg;
 
 const Mutation = {
   createUser(parent, args, { db }, info) {
