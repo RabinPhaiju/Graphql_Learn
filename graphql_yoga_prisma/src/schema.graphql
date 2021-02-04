@@ -1,9 +1,8 @@
 # Scaler types -> String, Boolean, Int, Float, ID
 type Query {
-  users(query: String): [User]!
+  users(query: String): [User]
   posts(query: String): [Post]!
   comments(query: String): [Comment]!
-  me: User!
 }
 
 type Mutation {
@@ -25,8 +24,10 @@ type Subscription {
 
 input CreateUserInput {
   name: String!
+  username: String!
   email: String!
   password: String!
+  username: String!
 }
 
 input UpdateUserInput {
@@ -39,7 +40,7 @@ input CreatePostInput {
   title: String!
   body: String!
   published: Boolean!
-  author: ID!
+  authorId: String!
 }
 
 input UpdatePostInput {
@@ -50,8 +51,8 @@ input UpdatePostInput {
 
 input CreateCommentInput {
   text: String!
-  author: ID!
-  post: ID!
+  authorId: ID!
+  postId: ID!
 }
 
 input UpdateCommentInput {
@@ -62,8 +63,14 @@ type User {
   id: ID!
   name: String!
   email: String!
-  # posts: [Post!]!
-  # comments: [Comment!]!
+  createdAt: Int
+  updatedAt: Int
+  role: String!
+  bio: String
+  profilePic: String
+  username: String
+  posts: [Post]!
+  comments: [Comment]!
 }
 type Post {
   id: ID!
@@ -71,13 +78,22 @@ type Post {
   body: String!
   published: Boolean!
   author: User!
-  comments: [Comment!]!
+  createdAt: Int
+  updatedAt: Int
+  comments: [Comment]!
 }
 type Comment {
   id: ID!
   text: String!
   author: User!
   post: Post!
+  createdAt: Int
+  updatedAt: Int
+}
+
+type Authpayload {
+  user: User!
+  token: String!
 }
 
 enum MutationType {

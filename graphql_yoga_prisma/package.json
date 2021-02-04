@@ -1,19 +1,20 @@
 {
-  "name": "graphql_yoga",
+  "name": "graphql_yoga_prisma",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon src/index.js --ext js,graphql,prisma",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/index.js --ext js,graphql,prisma"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rabin Phaiju",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^2.16.0",
+    "bcryptjs": "^2.4.3",
     "graphql-yoga": "^1.18.3",
+    "jsonwebtoken": "^8.5.1",
     "uuid": "^3.3.2"
   }
 }

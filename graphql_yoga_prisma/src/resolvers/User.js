@@ -1,11 +1,11 @@
 // const User = {
-//   posts(parent, args, { db, prisma }, info) {
-//     return db.posts.filter((post) => {
+//   posts(parent, args, { prisma, prisma }, info) {
+//     return prisma.posts.filter((post) => {
 //       return post.author === parent.id;
 //     });
 //   },
-//   comments(parent, args, { db }, info) {
-//     return db.comments.filter((comment) => {
+//   comments(parent, args, { prisma }, info) {
+//     return prisma.comments.filter((comment) => {
 //       return comment.author === parent.id;
 //     });
 //   },

@@ -1,43 +1,40 @@
 const Query = {
-  users(parent, args, { db }, info) {
+  async users(parent, args, { prisma }, info) {
     if (!args.query) {
-      return db.users;
+      return await prisma.user.findMany();
     } else {
-      return db.users.filter((user) => {
-        return user.name.toLowerCase().includes(args.query.toLowerCase());
+      return await prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: args.query,
+              },
+            },
+          ],
+        },
+        include: {
+          post: {
+            include: {
+              comment: true,
+            },
+          },
+          comment: true,
+        },
       });
     }
   },
-  posts(parent, args, { db }, info) {
+  async posts(parent, args, { prisma }, info) {
     if (!args.query) {
-      return db.posts.filter((post) => {
-        return post.published;
-      });
+      return await prisma.post.findMany();
     } else {
-      return db.posts.filter((post) => {
-        const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
-        const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
-        return (isTitleMatch || isBodyMatch) && post.published;
-      });
     }
   },
-  comments(parent, args, { db }, info) {
+  async comments(parent, args, { prisma }, info) {
     if (!args.query) {
-      return db.comments;
+      return await prisma.comment.findMany();
     } else {
-      return db.comments.filter((comment) => {
-        const isTextMatch = comment.text.toLowerCase().includes(args.query.toLowerCase());
-        return isTextMatch;
-      });
     }
-  },
-  me() {
-    return {
-      id: "12323",
-      name: "Rabin",
-      email: "rabin@gmial.com",
-      age: null,
-    };
   },
 };
 

@@ -29,3 +29,8 @@
 # Migrate
 
 - npx prisma migrate dev --name init --preview-feature
+
+# Login
+
+- <h1>TODO</h1>
+- Mutation -> createProfile -> take userID from token instead of passing through argument

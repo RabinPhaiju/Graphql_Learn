@@ -10,17 +10,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Users {
+model User {
+  id         String    @id @default(uuid())
+  name       String
+  email      String    @unique
+  bio        String?
+  profilePic String?
+  username   String?
+  password   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  role       Role      @default(USER)
+  posts      Post[]    @relation("UserAuthorsPost") //one-many relation
+  comments   Comment[] @relation("UserAuthorsComments")
+}
+
+//every user can like multiple post and every post can be liked by multiple user
+//model many to many
+model Post {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String
+  body      String
+  published Boolean
+  author    User?     @relation("UserAuthorsPost", fields: [authorId], references: [id]) //? is required for cascade delete
+  authorId  String?
+  comments  Comment[] @relation("PostHasComments")
+}
+
+model Comment {
   id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  role      Role     @default(USER)
-
-
-
+  text      String
+  post      Post?    @relation("PostHasComments", fields: [postId], references: [id])
+  postId    String?
+  author    User?    @relation("UserAuthorsComments", fields: [authorId], references: [id]) //? is required for cascade delete
+  authorId  String?
 }
 
 enum Role {

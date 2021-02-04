@@ -4,7 +4,6 @@ const { PrismaClient } = pkg;
 
 const prisma = new PrismaClient();
 
-// import db from "./db.js";
 import Query from "./resolvers/Query.js";
 import Mutation from "./resolvers/Mutation.js";
 import Subscription from "./resolvers/Subscription.js";
@@ -26,7 +25,7 @@ const server = new GraphQLServer({
   },
   context: {
     pubsub,
-    db: prisma,
+    prisma,
   },
 });
 server.start(() => console.log("Server is running on localhost : 4000"));
