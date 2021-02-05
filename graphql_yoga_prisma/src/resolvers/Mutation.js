@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
@@ -24,7 +25,10 @@ const Mutation = {
         role: role ? role : "USER",
       },
     });
-    return user;
+    return {
+      user,
+      token: jwt.sign({ userId: user.id }, "lolsecretkey"),
+    };
   },
   async deleteUser(parent, { id }, { prisma }, info) {
     const [userIndex] = await prisma.user.findMany({ where: { id } });
