@@ -60,7 +60,7 @@ const Mutation = {
     pubsub.publish("post", {
       post: {
         mutation: "CREATED",
-        data: post.author,
+        node: post,
       },
     });
     return post;
@@ -80,7 +80,7 @@ const Mutation = {
       pubsub.publish("post", {
         post: {
           mutation: "DELETED",
-          data: post,
+          node: post,
         },
       });
     }
@@ -101,7 +101,7 @@ const Mutation = {
     pubsub.publish("post", {
       post: {
         mutation: "UPDATED",
-        data: updatePost,
+        node: updatePost,
       },
     });
 
@@ -118,7 +118,7 @@ const Mutation = {
       throw new Error("Post not found.");
     }
 
-    const comment = await prisma.comment.create({
+    const newComment = await prisma.comment.create({
       data: {
         text,
         authorId,
@@ -132,11 +132,11 @@ const Mutation = {
     pubsub.publish(`comment ${postId}`, {
       comment: {
         mutation: "CREATED",
-        data: comment,
+        node: newComment,
       },
     });
 
-    return comment;
+    return newComment;
   },
   async deleteComment(parent, { id }, { pubsub, prisma }, info) {
     const [commentIndex] = await prisma.comment.findMany({ where: { id } });
@@ -154,7 +154,7 @@ const Mutation = {
     pubsub.publish(`comment ${deletedComment.postId}`, {
       comment: {
         mutation: "DELETED",
-        data: deletedComment,
+        node: deletedComment,
       },
     });
 
