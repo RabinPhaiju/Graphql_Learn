@@ -89,7 +89,7 @@ type Comment {
   id: ID!
   text: String!
   author: User!
-  post: Post!
+  post: Post
   createdAt: Int
   updatedAt: Int
 }
@@ -112,10 +112,10 @@ enum Role {
 
 type PostSubscriptionPayload {
   mutation: MutationType!
-  data: Post!
+  node: Post
 }
 
 type CommentSubscriptionPayload {
   mutation: MutationType!
-  data: Comment!
+  node: Comment
 }

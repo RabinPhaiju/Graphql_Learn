@@ -30,6 +30,14 @@
 
 - npx prisma migrate dev --name init --preview-feature
 
+# Seed
+
+- npx prisma db seed --preview-feature
+
+# Studio
+
+- npx prisma studio
+
 # Login
 
 - <h1>TODO</h1>

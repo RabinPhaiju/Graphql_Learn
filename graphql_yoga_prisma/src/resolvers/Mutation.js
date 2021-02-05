@@ -53,6 +53,15 @@ const Mutation = {
         published,
         authorId,
       },
+      include: {
+        author: true,
+      },
+    });
+    pubsub.publish("post", {
+      post: {
+        mutation: "CREATED",
+        data: post.author,
+      },
     });
     return post;
   },
@@ -63,19 +72,19 @@ const Mutation = {
     }
     const post = await prisma.post.delete({
       where: { id },
+      include: {
+        author: true,
+      },
     });
+    if (post.published) {
+      pubsub.publish("post", {
+        post: {
+          mutation: "DELETED",
+          data: post,
+        },
+      });
+    }
     return post;
-
-    // if (deletedPost.published) {
-    //   pubsub.publish("post", {
-    //     post: {
-    //       mutation: "DELETED",
-    //       data: deletedPost,
-    //     },
-    //   });
-    // }
-
-    return deletedPost;
   },
   async updatePost(parent, { id, data }, { prisma, pubsub }, info) {
     const [postIndex] = await prisma.post.findMany({ where: { id } });
@@ -85,6 +94,15 @@ const Mutation = {
     const updatePost = await prisma.post.update({
       where: { id },
       data: data,
+      include: {
+        author: true,
+      },
+    });
+    pubsub.publish("post", {
+      post: {
+        mutation: "UPDATED",
+        data: updatePost,
+      },
     });
 
     return updatePost;
@@ -100,17 +118,21 @@ const Mutation = {
       throw new Error("Post not found.");
     }
 
-    // pubsub.publish(`comment ${args.data.post}`, {
-    //   comment: {
-    //     mutation: "CREATED",
-    //     data: comment,
-    //   },
-    // });
     const comment = await prisma.comment.create({
       data: {
         text,
         authorId,
         postId,
+      },
+      include: {
+        author: true,
+        post: true,
+      },
+    });
+    pubsub.publish(`comment ${postId}`, {
+      comment: {
+        mutation: "CREATED",
+        data: comment,
       },
     });
 
@@ -121,16 +143,21 @@ const Mutation = {
     if (!commentIndex) {
       throw new Error("Comment not found");
     }
-
-    // pubsub.publish(`comment ${deletedComment.post}`, {
-    //   comment: {
-    //     mutation: "DELETED",
-    //     data: deletedComment,
-    //   },
-    // });
     const deletedComment = await prisma.comment.delete({
       where: { id },
+      include: {
+        author: true,
+        post: true,
+      },
     });
+
+    pubsub.publish(`comment ${deletedComment.postId}`, {
+      comment: {
+        mutation: "DELETED",
+        data: deletedComment,
+      },
+    });
+
     return deletedComment;
   },
   async updateComment(parent, { id, data }, { prisma, pubsub }, info) {
@@ -139,15 +166,19 @@ const Mutation = {
       throw new Error("Comment not found");
     }
 
-    // pubsub.publish(`comment ${comment.post}`, {
-    //   comment: {
-    //     mutation: "UPDATED",
-    //     data: comment,
-    //   },
-    // });
     const updateComment = await prisma.comment.update({
       where: { id },
       data: data,
+      include: {
+        author: true,
+        post: true,
+      },
+    });
+    pubsub.publish(`comment ${updateComment.postId}`, {
+      comment: {
+        mutation: "UPDATED",
+        node: updateComment,
+      },
     });
 
     return updateComment;
