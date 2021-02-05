@@ -27,12 +27,15 @@ input CreateUserInput {
   username: String!
   email: String!
   password: String!
-  username: String!
 }
 
 input UpdateUserInput {
   name: String
   email: String
+  bio: String
+  profilePic: String
+  password: String
+  role: Role
 }
 
 input CreatePostInput {
@@ -100,6 +103,11 @@ enum MutationType {
   CREATED
   UPDATED
   DELETED
+}
+enum Role {
+  SUPERADMIN
+  USER
+  ADMIN
 }
 
 type PostSubscriptionPayload {
