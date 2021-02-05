@@ -30,6 +30,24 @@ const Mutation = {
       token: jwt.sign({ userId: user.id }, "lolsecretkey"),
     };
   },
+  async loginUser(parent, args, { prisma }, info) {
+    const { email, password } = args.data;
+    const [user] = await prisma.user.findMany({ where: { email } });
+
+    if (!user) {
+      throw new Error("Unable to login. Signup");
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      console.log(`login user ${user.name}`);
+      return {
+        user,
+        token: jwt.sign({ userId: user.id }, "lolsecretkey"),
+      };
+    } else {
+      throw new Error("Email or password wrong.");
+    }
+  },
   async deleteUser(parent, { id }, { prisma }, info) {
     const [userIndex] = await prisma.user.findMany({ where: { id } });
     if (!userIndex) {
