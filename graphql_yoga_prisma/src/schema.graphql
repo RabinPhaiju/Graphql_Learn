@@ -1,8 +1,8 @@
 # Scaler types -> String, Boolean, Int, Float, ID
 type Query {
   users(query: String): [User]
-  posts(query: String): [Post]!
-  comments(query: String): [Comment]!
+  posts(query: String): [Post]
+  comments(query: String): [Comment]
 }
 
 type Mutation {
@@ -11,7 +11,7 @@ type Mutation {
   updateUser(id: ID!, data: UpdateUserInput!): User!
   createPost(data: CreatePostInput!): Post!
   deletePost(id: ID!): Post!
-  updatePost(id: ID!, data: UpdatePostInput!): Post!
+  updatePost(id: ID!, data: UpdatePostInput): Post
   createComment(data: CreateCommentInput!): Comment!
   deleteComment(id: ID!): Comment!
   updateComment(id: ID!, data: UpdateCommentInput!): Comment!
@@ -33,7 +33,6 @@ input CreateUserInput {
 input UpdateUserInput {
   name: String
   email: String
-  age: Int
 }
 
 input CreatePostInput {
@@ -69,18 +68,19 @@ type User {
   bio: String
   profilePic: String
   username: String
-  posts: [Post]!
-  comments: [Comment]!
+  posts: [Post]
+  comments: [Comment]
 }
 type Post {
   id: ID!
   title: String!
   body: String!
   published: Boolean!
-  author: User!
+  author: User
+  authorId: ID
   createdAt: Int
   updatedAt: Int
-  comments: [Comment]!
+  comments: [Comment]
 }
 type Comment {
   id: ID!

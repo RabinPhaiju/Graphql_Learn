@@ -33,7 +33,7 @@ model Post {
   updatedAt DateTime  @updatedAt
   title     String
   body      String
-  published Boolean
+  published Boolean   @default(false)
   author    User?     @relation("UserAuthorsPost", fields: [authorId], references: [id]) //? is required for cascade delete
   authorId  String?
   comments  Comment[] @relation("PostHasComments")
