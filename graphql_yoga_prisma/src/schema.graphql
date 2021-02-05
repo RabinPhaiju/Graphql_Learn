@@ -67,10 +67,11 @@ type User {
   email: String!
   createdAt: Int
   updatedAt: Int
-  role: String!
+  role: Role!
   bio: String
   profilePic: String
-  username: String
+  username: String!
+  password: String!
   posts: [Post]
   comments: [Comment]
 }

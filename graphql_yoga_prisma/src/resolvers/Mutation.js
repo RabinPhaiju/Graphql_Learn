@@ -1,16 +1,26 @@
+import bcrypt from "bcryptjs";
+
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
     const { name, username, email, password, role } = args.data;
+    if (password.length < 8) {
+      throw new Error("Password must be 8 characters or longer.");
+    }
+    const newPassword = await bcrypt.hash(password, 10);
+
     const [emailTaken] = await prisma.user.findMany({ where: { email } });
+    const [userNameTaken] = await prisma.user.findMany({ where: { username } });
     if (emailTaken) {
       throw new Error("Email already taken.");
+    } else if (userNameTaken) {
+      throw new Error("Username already taken.");
     }
     const user = await prisma.user.create({
       data: {
         name,
         username,
         email,
-        password,
+        password: newPassword,
         role: role ? role : "USER",
       },
     });
@@ -28,6 +38,11 @@ const Mutation = {
     }
   },
   async updateUser(parent, { id, data }, { prisma }, info) {
+    if (data.password.length < 8) {
+      throw new Error("Password must be 8 characters or longer.");
+    }
+    const newPassword = await bcrypt.hash(data.password, 10);
+
     const [userIndex] = await prisma.user.findMany({ where: { id } });
 
     if (!userIndex) {
@@ -35,7 +50,10 @@ const Mutation = {
     } else {
       const updateUser = await prisma.user.update({
         where: { id },
-        data: data,
+        data: {
+          ...data,
+          password: newPassword,
+        },
       });
       return updateUser;
     }
