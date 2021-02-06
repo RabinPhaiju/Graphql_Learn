@@ -105,6 +105,12 @@ const Mutation = {
         node: post,
       },
     });
+    pubsub.publish(`post ${userId}`, {
+      myPost: {
+        mutation: "CREATED",
+        node: post,
+      },
+    });
     return post;
   },
   async deletePost(parent, { id }, { prisma, pubsub, request }, info) {
@@ -127,6 +133,12 @@ const Mutation = {
     if (post.published) {
       pubsub.publish("post", {
         post: {
+          mutation: "DELETED",
+          node: post,
+        },
+      });
+      pubsub.publish(`post ${userId}`, {
+        myPost: {
           mutation: "DELETED",
           node: post,
         },
@@ -166,6 +178,12 @@ const Mutation = {
           node: updatePost,
         },
       });
+      pubsub.publish(`post ${userId}`, {
+        myPost: {
+          mutation: "DELETED",
+          node: updatePost,
+        },
+      });
     } else if (postIndex.published === false && data.published === true) {
       pubsub.publish("post", {
         post: {
@@ -173,9 +191,21 @@ const Mutation = {
           node: updatePost,
         },
       });
+      pubsub.publish(`post ${userId}`, {
+        myPost: {
+          mutation: "CREATED",
+          node: updatePost,
+        },
+      });
     } else {
       pubsub.publish("post", {
         post: {
+          mutation: "UPDATED",
+          node: updatePost,
+        },
+      });
+      pubsub.publish(`post ${userId}`, {
+        myPost: {
           mutation: "UPDATED",
           node: updatePost,
         },
