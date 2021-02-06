@@ -1,7 +1,11 @@
 # Scaler types -> String, Boolean, Int, Float, ID
 type Query {
   users(query: String): [User]
+  user: User!
+  me: User!
   posts(query: String): [Post]
+  myPosts(query: String): [Post]
+  post(id: ID!): Post!
   comments(query: String): [Comment]
 }
 
@@ -67,7 +71,7 @@ input UpdateCommentInput {
 type User {
   id: ID!
   name: String!
-  email: String!
+  email: String
   createdAt: Int
   updatedAt: Int
   role: Role!
