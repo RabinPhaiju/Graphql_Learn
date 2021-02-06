@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import generateToken from "./../utils/generateToken.js";
 import getUserId from "./../utils/getUserId.js";
 
 const Mutation = {
@@ -28,7 +28,7 @@ const Mutation = {
     });
     return {
       user,
-      token: jwt.sign({ userId: user.id }, "lolsecretkey"),
+      token: generateToken(user.id),
     };
   },
   async loginUser(parent, args, { prisma }, info) {
@@ -43,7 +43,7 @@ const Mutation = {
       console.log(`login user ${user.name}`);
       return {
         user,
-        token: jwt.sign({ userId: user.id }, "lolsecretkey"),
+        token: generateToken(user.id),
       };
     } else {
       throw new Error("Email or password wrong.");
