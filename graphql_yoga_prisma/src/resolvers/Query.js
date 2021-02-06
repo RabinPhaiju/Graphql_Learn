@@ -4,6 +4,11 @@ const Query = {
   async users(parent, args, { prisma }, info) {
     if (!args.query) {
       return await prisma.user.findMany({
+        take: args.take,
+        skip: args.skip,
+        // cursor: {
+        //   id: args.cursor,
+        // },
         include: {
           posts: true,
           comments: true,
@@ -11,6 +16,8 @@ const Query = {
       });
     } else {
       return await prisma.user.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           OR: [
             {
@@ -27,7 +34,6 @@ const Query = {
       });
     }
   },
-  async user(parent, args, { prisma }, info) {},
   async me(parent, args, { prisma, request }, info) {
     const userId = getUserId(request);
 
@@ -45,6 +51,8 @@ const Query = {
   async posts(parent, args, { prisma }, info) {
     if (!args.query) {
       return await prisma.post.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           published: true,
         },
@@ -55,6 +63,8 @@ const Query = {
       });
     } else {
       return await prisma.post.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           published: true,
           OR: [
@@ -76,6 +86,8 @@ const Query = {
     const userId = getUserId(request);
     if (!args.query) {
       return await prisma.post.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           authorId: userId,
         },
@@ -86,6 +98,8 @@ const Query = {
       });
     } else {
       return await prisma.post.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           authorId: userId,
           OR: [
@@ -128,6 +142,8 @@ const Query = {
   async comments(parent, args, { prisma }, info) {
     if (!args.query) {
       return await prisma.comment.findMany({
+        take: args.take,
+        skip: args.skip,
         include: {
           post: true,
           author: true,
@@ -135,6 +151,8 @@ const Query = {
       });
     } else {
       return await prisma.comment.findMany({
+        take: args.take,
+        skip: args.skip,
         where: {
           OR: [
             {

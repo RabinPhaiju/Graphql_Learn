@@ -1,12 +1,11 @@
 # Scaler types -> String, Boolean, Int, Float, ID
 type Query {
-  users(query: String): [User]
-  user: User!
+  users(query: String, take: Int, skip: Int, cursor: String): [User]
   me: User!
-  posts(query: String): [Post]
-  myPosts(query: String): [Post]
+  posts(query: String, take: Int, skip: Int, cursor: String): [Post]
+  myPosts(query: String, take: Int, skip: Int, cursor: String): [Post]
   post(id: ID!): Post!
-  comments(query: String): [Comment]
+  comments(query: String, take: Int, skip: Int, cursor: String): [Comment]
 }
 
 type Mutation {
