@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getUserId from "./../utils/getUserId.js";
 
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
@@ -48,50 +49,51 @@ const Mutation = {
       throw new Error("Email or password wrong.");
     }
   },
-  async deleteUser(parent, { id }, { prisma }, info) {
-    const [userIndex] = await prisma.user.findMany({ where: { id } });
-    if (!userIndex) {
-      throw new Error("User not found");
-    } else {
-      const user = await prisma.user.delete({
-        where: { id },
-      });
-      return user;
-    }
+  async deleteUser(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+    const user = await prisma.user.delete({
+      where: { id: userId },
+    });
+    return user;
   },
-  async updateUser(parent, { id, data }, { prisma }, info) {
-    if (data.password.length < 8) {
-      throw new Error("Password must be 8 characters or longer.");
-    }
-    const newPassword = await bcrypt.hash(data.password, 10);
+  async updateUser(parent, { data }, { prisma, request }, info) {
+    const userId = getUserId(request);
+    // updatepassword to different function
+    // if (data.password !== undefined) {
+    //   if (data.password.length < 8) {
+    //     throw new Error("Password must be 8 characters or longer.");
+    //   }
+    // } else {
+    //   const newPassword = await bcrypt.hash(data.password, 10);
+    //   data.password = newPassword;
+    // }
 
-    const [userIndex] = await prisma.user.findMany({ where: { id } });
-
-    if (!userIndex) {
-      throw new Error("User not found");
-    } else {
-      const updateUser = await prisma.user.update({
-        where: { id },
-        data: {
-          ...data,
-          password: newPassword,
-        },
-      });
-      return updateUser;
-    }
+    // const [userIndex] = await prisma.user.findMany({ where: { id } });
+    // if (!userIndex) {
+    //   throw new Error("User not found");
+    // }
+    const updateUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...data,
+      },
+    });
+    return updateUser;
   },
-  async createPost(parent, args, { pubsub, prisma }, info) {
-    const { title, authorId, body, published } = args.data; //provide author from token
-    const [userexist] = await prisma.user.findMany({ where: { id: authorId } });
-    if (!userexist) {
-      throw new Error("User not found.");
-    }
+  async createPost(parent, args, { pubsub, prisma, request }, info) {
+    const userId = getUserId(request);
+
+    const { title, body, published } = args.data; //provide author from token
+    // const [userexist] = await prisma.user.findMany({ where: { id: authorId } });
+    // if (!userexist) {
+    //   throw new Error("User not found.");
+    // }
     const post = await prisma.post.create({
       data: {
         title,
         body,
         published,
-        authorId,
+        authorId: userId,
       },
       include: {
         author: true,
@@ -105,10 +107,16 @@ const Mutation = {
     });
     return post;
   },
-  async deletePost(parent, { id }, { prisma, pubsub }, info) {
-    const [postIndex] = await prisma.post.findMany({ where: { id } });
+  async deletePost(parent, { id }, { prisma, pubsub, request }, info) {
+    const userId = getUserId(request);
+    const [postIndex] = await prisma.post.findMany({
+      where: {
+        id,
+        authorId: userId,
+      },
+    });
     if (!postIndex) {
-      throw new Error("Post not found");
+      throw new Error("Unable to delete the post.");
     }
     const post = await prisma.post.delete({
       where: { id },
@@ -126,10 +134,16 @@ const Mutation = {
     }
     return post;
   },
-  async updatePost(parent, { id, data }, { prisma, pubsub }, info) {
-    const [postIndex] = await prisma.post.findMany({ where: { id } });
+  async updatePost(parent, { id, data }, { prisma, pubsub, request }, info) {
+    const userId = getUserId(request);
+    const [postIndex] = await prisma.post.findMany({
+      where: {
+        id,
+        authorId: userId,
+      },
+    });
     if (!postIndex) {
-      throw new Error("Post not found");
+      throw new Error("Unable to update the post.");
     }
     const updatePost = await prisma.post.update({
       where: { id },
@@ -147,13 +161,14 @@ const Mutation = {
 
     return updatePost;
   },
-  async createComment(parent, args, { pubsub, prisma }, info) {
-    const { text, postId, authorId } = args.data;
-    const [userExist] = await prisma.user.findMany({ where: { id: authorId } });
+  async createComment(parent, args, { pubsub, prisma, request }, info) {
+    const { text, postId } = args.data;
+    const userId = getUserId(request);
+    const [userExist] = await prisma.user.findMany({ where: { id: userId } });
     const [postExist] = await prisma.post.findMany({ where: { id: postId, published: true } });
 
     if (!userExist) {
-      throw new Error("User not found.");
+      throw new Error("Authentication required");
     } else if (!postExist) {
       throw new Error("Post not found.");
     }
@@ -161,7 +176,7 @@ const Mutation = {
     const newComment = await prisma.comment.create({
       data: {
         text,
-        authorId,
+        authorId: userId,
         postId,
       },
       include: {
@@ -178,10 +193,16 @@ const Mutation = {
 
     return newComment;
   },
-  async deleteComment(parent, { id }, { pubsub, prisma }, info) {
-    const [commentIndex] = await prisma.comment.findMany({ where: { id } });
+  async deleteComment(parent, { id }, { pubsub, prisma, request }, info) {
+    const userId = getUserId(request);
+    const [commentIndex] = await prisma.comment.findMany({
+      where: {
+        id,
+        authorId: userId,
+      },
+    });
     if (!commentIndex) {
-      throw new Error("Comment not found");
+      throw new Error("Unable to delete to comment");
     }
     const deletedComment = await prisma.comment.delete({
       where: { id },
@@ -200,10 +221,16 @@ const Mutation = {
 
     return deletedComment;
   },
-  async updateComment(parent, { id, data }, { prisma, pubsub }, info) {
-    const [commentIndex] = await prisma.comment.findMany({ where: { id } });
+  async updateComment(parent, { id, data }, { prisma, pubsub, request }, info) {
+    const userId = getUserId(request);
+    const [commentIndex] = await prisma.comment.findMany({
+      where: {
+        id,
+        authorId: userId,
+      },
+    });
     if (!commentIndex) {
-      throw new Error("Comment not found");
+      throw new Error("Unable to update the comment");
     }
 
     const updateComment = await prisma.comment.update({
