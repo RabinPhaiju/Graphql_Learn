@@ -17,9 +17,6 @@ const Query = {
               name: {
                 contains: args.query,
               },
-              email: {
-                contains: args.query,
-              },
             },
           ],
         },

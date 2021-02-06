@@ -152,12 +152,35 @@ const Mutation = {
         author: true,
       },
     });
-    pubsub.publish("post", {
-      post: {
-        mutation: "UPDATED",
-        node: updatePost,
-      },
-    });
+
+    if (postIndex.published === true && data.published === false) {
+      await prisma.comment.deleteMany({
+        where: {
+          postId: id,
+        },
+      });
+
+      pubsub.publish("post", {
+        post: {
+          mutation: "DELETED",
+          node: updatePost,
+        },
+      });
+    } else if (postIndex.published === false && data.published === true) {
+      pubsub.publish("post", {
+        post: {
+          mutation: "CREATED",
+          node: updatePost,
+        },
+      });
+    } else {
+      pubsub.publish("post", {
+        post: {
+          mutation: "UPDATED",
+          node: updatePost,
+        },
+      });
+    }
 
     return updatePost;
   },
