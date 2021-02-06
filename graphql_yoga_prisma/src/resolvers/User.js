@@ -9,5 +9,13 @@ const User = {
     }
     return null;
   },
+  async posts(parent, args, { prisma }, info) {
+    return await prisma.post.findMany({
+      where: {
+        published: true,
+        authorId: parent.id,
+      },
+    });
+  },
 };
 export { User as default };
