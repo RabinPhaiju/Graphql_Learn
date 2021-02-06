@@ -72,8 +72,8 @@ type User {
   id: ID!
   name: String!
   email: String
-  createdAt: Int
-  updatedAt: Int
+  createdAt: String
+  updatedAt: String
   role: Role!
   bio: String
   profilePic: String
@@ -89,8 +89,8 @@ type Post {
   published: Boolean!
   author: User
   authorId: ID
-  createdAt: Int
-  updatedAt: Int
+  createdAt: String
+  updatedAt: String
   comments: [Comment]
 }
 type Comment {
@@ -98,8 +98,8 @@ type Comment {
   text: String!
   author: User!
   post: Post
-  createdAt: Int
-  updatedAt: Int
+  createdAt: String
+  updatedAt: String
 }
 
 type Authpayload {
