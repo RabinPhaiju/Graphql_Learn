@@ -1,14 +1,13 @@
 import bcrypt from "bcryptjs";
+import hashPassword from "./../utils/hashPassword.js";
 import generateToken from "./../utils/generateToken.js";
 import getUserId from "./../utils/getUserId.js";
 
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
     const { name, username, email, password, role } = args.data;
-    if (password.length < 8) {
-      throw new Error("Password must be 8 characters or longer.");
-    }
-    const newPassword = await bcrypt.hash(password, 10);
+
+    const newPassword = await hashPassword(password);
 
     const [emailTaken] = await prisma.user.findMany({ where: { email } });
     const [userNameTaken] = await prisma.user.findMany({ where: { username } });
@@ -58,25 +57,19 @@ const Mutation = {
   },
   async updateUser(parent, { data }, { prisma, request }, info) {
     const userId = getUserId(request);
-    // updatepassword to different function
-    // if (data.password !== undefined) {
-    //   if (data.password.length < 8) {
-    //     throw new Error("Password must be 8 characters or longer.");
-    //   }
-    // } else {
-    //   const newPassword = await bcrypt.hash(data.password, 10);
-    //   data.password = newPassword;
-    // }
 
-    // const [userIndex] = await prisma.user.findMany({ where: { id } });
-    // if (!userIndex) {
-    //   throw new Error("User not found");
-    // }
+    const [userIndex] = await prisma.user.findMany({ where: { id: userId } });
+    if (!userIndex) {
+      throw new Error("User not found");
+    }
+
+    if (typeof data.password === "string") {
+      data.password = await hashPassword(data.password);
+    }
+
     const updateUser = await prisma.user.update({
       where: { id: userId },
-      data: {
-        ...data,
-      },
+      data,
     });
     return updateUser;
   },
