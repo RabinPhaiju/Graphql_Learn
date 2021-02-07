@@ -9,8 +9,8 @@ const Mutation = {
 
     const newPassword = await hashPassword(password);
 
-    const [emailTaken] = await prisma.user.findMany({ where: { email } });
-    const [userNameTaken] = await prisma.user.findMany({ where: { username } });
+    const emailTaken = await prisma.user.findUnique({ where: { email } });
+    const userNameTaken = await prisma.user.findUnique({ where: { username } });
     if (emailTaken) {
       throw new Error("Email already taken.");
     } else if (userNameTaken) {
@@ -32,7 +32,7 @@ const Mutation = {
   },
   async loginUser(parent, args, { prisma }, info) {
     const { email, password } = args.data;
-    const [user] = await prisma.user.findMany({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new Error("Unable to login. Signup");
@@ -58,7 +58,7 @@ const Mutation = {
   async updateUser(parent, { data }, { prisma, request }, info) {
     const userId = getUserId(request);
 
-    const [userIndex] = await prisma.user.findMany({ where: { id: userId } });
+    const userIndex = await prisma.user.findUnique({ where: { id: userId } });
     if (!userIndex) {
       throw new Error("User not found");
     }
@@ -76,11 +76,11 @@ const Mutation = {
   async createPost(parent, args, { pubsub, prisma, request }, info) {
     const userId = getUserId(request);
 
-    const { title, body, published } = args.data; //provide author from token
-    // const [userexist] = await prisma.user.findMany({ where: { id: authorId } });
-    // if (!userexist) {
-    //   throw new Error("User not found.");
-    // }
+    const { title, body, published } = args.data;
+    const userexist = await prisma.user.findUnique({ where: { id: userId } });
+    if (!userexist) {
+      throw new Error("User not found.");
+    }
     const post = await prisma.post.create({
       data: {
         title,
@@ -108,7 +108,7 @@ const Mutation = {
   },
   async deletePost(parent, { id }, { prisma, pubsub, request }, info) {
     const userId = getUserId(request);
-    const [postIndex] = await prisma.post.findMany({
+    const postIndex = await prisma.post.findFirst({
       where: {
         id,
         authorId: userId,
@@ -141,7 +141,7 @@ const Mutation = {
   },
   async updatePost(parent, { id, data }, { prisma, pubsub, request }, info) {
     const userId = getUserId(request);
-    const [postIndex] = await prisma.post.findMany({
+    const postIndex = await prisma.post.findFirst({
       where: {
         id,
         authorId: userId,
@@ -210,8 +210,8 @@ const Mutation = {
   async createComment(parent, args, { pubsub, prisma, request }, info) {
     const { text, postId } = args.data;
     const userId = getUserId(request);
-    const [userExist] = await prisma.user.findMany({ where: { id: userId } });
-    const [postExist] = await prisma.post.findMany({ where: { id: postId, published: true } });
+    const userExist = await prisma.user.findUnique({ where: { id: userId } });
+    const postExist = await prisma.post.findFirst({ where: { id: postId, published: true } });
 
     if (!userExist) {
       throw new Error("Authentication required");
@@ -241,7 +241,7 @@ const Mutation = {
   },
   async deleteComment(parent, { id }, { pubsub, prisma, request }, info) {
     const userId = getUserId(request);
-    const [commentIndex] = await prisma.comment.findMany({
+    const commentIndex = await prisma.comment.findFirst({
       where: {
         id,
         authorId: userId,
@@ -269,7 +269,7 @@ const Mutation = {
   },
   async updateComment(parent, { id, data }, { prisma, pubsub, request }, info) {
     const userId = getUserId(request);
-    const [commentIndex] = await prisma.comment.findMany({
+    const commentIndex = await prisma.comment.findFirst({
       where: {
         id,
         authorId: userId,

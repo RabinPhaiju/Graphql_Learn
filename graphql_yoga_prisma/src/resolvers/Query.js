@@ -37,7 +37,7 @@ const Query = {
   async me(parent, args, { prisma, request }, info) {
     const userId = getUserId(request);
 
-    const [user] = await prisma.user.findMany({
+    const user = await prisma.user.findFirst({
       where: {
         id: userId,
       },
@@ -46,6 +46,7 @@ const Query = {
         comments: true,
       },
     });
+    console.log(user);
     return user;
   },
   async posts(parent, args, { prisma }, info) {
@@ -120,7 +121,7 @@ const Query = {
   async post(parent, args, { prisma, request }, info) {
     const userId = getUserId(request, false);
 
-    const [post] = await prisma.post.findMany({
+    const post = await prisma.post.findFirst({
       where: {
         id: args.id,
         OR: [
